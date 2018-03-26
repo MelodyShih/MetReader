@@ -61,14 +61,16 @@
         ! These variables describe the full list of windfiles read
       integer                                       ,public :: MR_iwindfiles           ! number of files provided
 #ifdef USEPOINTERS
-!      character(len=130), allocatable,dimension(:)  ,public :: fc_windfilename
-      character(len=130), pointer ,dimension(:)  ,public :: MR_windfiles            ! name of file
+      character(len=130), allocatable,dimension(:)  ,public :: fc_windfilename
+      character(len=130), allocatable,dimension(:)  ,public :: MR_windfiles            ! name of file
+      real(kind=dp)     , pointer ,dimension(:)  ,public :: MR_windfile_starthour   ! start hour of the file
+      real(kind=dp)     , pointer ,dimension(:,:),public :: MR_windfile_stephour    ! offset hours of step
 #else
       character(len=130), allocatable,dimension(:)  ,public :: MR_windfiles            ! name of file
-#endif
       real(kind=dp)     , allocatable,dimension(:)  ,public :: MR_windfile_starthour   ! start hour of the file
-      integer           , allocatable,dimension(:)  ,public :: MR_windfiles_nt_fullmet ! number of steps in files
       real(kind=dp)     , allocatable,dimension(:,:),public :: MR_windfile_stephour    ! offset hours of step
+#endif
+      integer           , allocatable,dimension(:)  ,public :: MR_windfiles_nt_fullmet ! number of steps in files
       character(len=80)                             ,public :: MR_iwf_template         ! name of the template file
       logical           , allocatable,dimension(:)  ,public :: MR_windfiles_Have_GRIB_index
       character(len=130), allocatable,dimension(:)  ,public :: MR_windfiles_GRIB_index ! name of grib index file
@@ -403,9 +405,7 @@
        write(MR_global_production,*)"-------- Resetting all MetReader Memory ---------------"
        write(MR_global_production,*)"-------------------------------------------------------"
 
-       if(allocated(MR_windfile_starthour         ))deallocate(MR_windfile_starthour)
        if(allocated(MR_windfiles_nt_fullmet       ))deallocate(MR_windfiles_nt_fullmet)
-       if(allocated(MR_windfile_stephour          ))deallocate(MR_windfile_stephour)
        if(allocated(MR_windfiles_Have_GRIB_index  ))deallocate(MR_windfiles_Have_GRIB_index)
        if(allocated(MR_windfiles_GRIB_index       ))deallocate(MR_windfiles_GRIB_index)
        if(allocated(MR_MetStep_File               ))deallocate(MR_MetStep_File)
@@ -421,7 +421,9 @@
        if(allocated(MR_iwind5_year                ))deallocate(MR_iwind5_year)
 
 #ifdef USEPOINTERS
-       if(associated(MR_windfiles                  ))deallocate(MR_windfiles)
+       if(associated(MR_windfile_stephour          ))deallocate(MR_windfile_stephour)
+       if(associated(MR_windfile_starthour         ))deallocate(MR_windfile_starthour)
+       if(allocated (MR_windfiles                  ))deallocate(MR_windfiles)
        if(associated(MR_dum2d_met_int              ))deallocate(MR_dum2d_met_int)
        if(associated(MR_dum2d_met                  ))deallocate(MR_dum2d_met)
        if(associated(MR_dum3d_metP                 ))deallocate(MR_dum3d_metP)
@@ -461,7 +463,9 @@
        if(associated(amap_iwf25                    ))deallocate(amap_iwf25)
        if(associated(imap_iwf25                    ))deallocate(imap_iwf25)
 #else
-       if(allocated(MR_windfiles                  ))deallocate(MR_windfiles)
+       if(allocated(MR_windfile_stephour          ))deallocate(MR_windfile_stephour)
+       if(allocated(MR_windfile_starthour         ))deallocate(MR_windfile_starthour)
+       if(associated(MR_windfiles                  ))deallocate(MR_windfiles)
        if(allocated(MR_dum2d_met_int              ))deallocate(MR_dum2d_met_int)
        if(allocated(MR_dum2d_met                  ))deallocate(MR_dum2d_met)
        if(allocated(MR_dum3d_metP                 ))deallocate(MR_dum3d_metP)
@@ -860,7 +864,9 @@
         ! For NCEP 2.5 degree reanalysis and the NOAA product, only the directory
         ! was read into slot 1 of MR_windfiles(:).  We need to copy to slot 2
         ! to make sure we don't throw an error
-        MR_windfiles(2)   = MR_windfiles(1)
+        write(MR_global_error,*) "WARNING! COMPILE ERROR NOT FIXED"
+        stop 1
+        ! MR_windfiles(2)   = MR_windfiles(1)
         if(present(iy)) then
           ! This is needed at this point for allocating the number
           ! of steps per file (this depends on the year), but this
