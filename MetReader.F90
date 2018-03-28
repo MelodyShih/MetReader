@@ -63,8 +63,9 @@
 #ifdef USEPOINTERS
       character(len=130), allocatable,dimension(:)  ,public :: fc_windfilename
       character(len=130), allocatable,dimension(:)  ,public :: MR_windfiles            ! name of file
-      real(kind=dp)     , pointer ,dimension(:)  ,public :: MR_windfile_starthour   ! start hour of the file
-      real(kind=dp)     , pointer ,dimension(:,:),public :: MR_windfile_stephour    ! offset hours of step
+      character(len=130),                            public :: MR_windfiles_aux        ! name of file
+      real(kind=dp)     , pointer ,dimension(:)     ,public :: MR_windfile_starthour   ! start hour of the file
+      real(kind=dp)     , pointer ,dimension(:,:)   ,public :: MR_windfile_stephour    ! offset hours of step
 #else
       character(len=130), allocatable,dimension(:)  ,public :: MR_windfiles            ! name of file
       real(kind=dp)     , allocatable,dimension(:)  ,public :: MR_windfile_starthour   ! start hour of the file
@@ -79,22 +80,22 @@
         ! duration
       integer                                     ,public :: MR_MetSteps_Total
       integer                                     ,public :: MR_iMetStep_Now
-      character(len=130), allocatable,dimension(:),public :: MR_MetStep_File
-      integer           , allocatable,dimension(:),public :: MR_MetStep_findex
-      integer           , allocatable,dimension(:),public :: MR_MetStep_tindex
-      real(kind=dp)     , allocatable,dimension(:),public :: MR_MetStep_Hour_since_baseyear
-      real(kind=dp)     , allocatable,dimension(:),public :: MR_MetStep_Interval
-      integer           , allocatable,dimension(:),public :: MR_MetStep_year
-      integer           , allocatable,dimension(:),public :: MR_MetStep_month
-      integer           , allocatable,dimension(:),public :: MR_MetStep_day
-      integer           , allocatable,dimension(:),public :: MR_MetStep_doY
-      real(kind=dp)     , allocatable,dimension(:),public :: MR_MetStep_Hour_Of_Day
+      character(len=130), pointer,dimension(:),public :: MR_MetStep_File
+      integer           , pointer,dimension(:),public :: MR_MetStep_findex
+      integer           , pointer,dimension(:),public :: MR_MetStep_tindex
+      real(kind=dp)     , pointer,dimension(:),public :: MR_MetStep_Hour_since_baseyear
+      real(kind=dp)     , pointer,dimension(:),public :: MR_MetStep_Interval
+      integer           , pointer,dimension(:),public :: MR_MetStep_year
+      integer           , pointer,dimension(:),public :: MR_MetStep_month
+      integer           , pointer,dimension(:),public :: MR_MetStep_day
+      integer           , pointer,dimension(:),public :: MR_MetStep_doY
+      real(kind=dp)     , pointer,dimension(:),public :: MR_MetStep_Hour_Of_Day
 
       real(kind=dp)                               ,public :: MR_ForecastInterval
       logical                                             :: MR_runAsForecast = .false.
       real(kind=dp)                                       :: MR_FC_Offset     = 0.0_dp
       logical                                             :: MR_Reannalysis   = .false.
-      integer           ,dimension(:), allocatable,public :: MR_iwind5_year
+      integer           ,dimension(:),pointer,public :: MR_iwind5_year
 
       !    Native grid of Met file using Pressure as vertical coordinate
 #ifdef USEPOINTERS
@@ -408,17 +409,17 @@
        if(allocated(MR_windfiles_nt_fullmet       ))deallocate(MR_windfiles_nt_fullmet)
        if(allocated(MR_windfiles_Have_GRIB_index  ))deallocate(MR_windfiles_Have_GRIB_index)
        if(allocated(MR_windfiles_GRIB_index       ))deallocate(MR_windfiles_GRIB_index)
-       if(allocated(MR_MetStep_File               ))deallocate(MR_MetStep_File)
-       if(allocated(MR_MetStep_findex             ))deallocate(MR_MetStep_findex)
-       if(allocated(MR_MetStep_tindex             ))deallocate(MR_MetStep_tindex)
-       if(allocated(MR_MetStep_Hour_since_baseyear))deallocate(MR_MetStep_Hour_since_baseyear)
-       if(allocated(MR_MetStep_Interval           ))deallocate(MR_MetStep_Interval)
-       if(allocated(MR_MetStep_year               ))deallocate(MR_MetStep_year)
-       if(allocated(MR_MetStep_month              ))deallocate(MR_MetStep_month)
-       if(allocated(MR_MetStep_day                ))deallocate(MR_MetStep_day)
-       if(allocated(MR_MetStep_doY                ))deallocate(MR_MetStep_doY)
-       if(allocated(MR_MetStep_Hour_Of_Day        ))deallocate(MR_MetStep_Hour_Of_Day)
-       if(allocated(MR_iwind5_year                ))deallocate(MR_iwind5_year)
+       if(associated(MR_MetStep_File               ))deallocate(MR_MetStep_File)
+       if(associated(MR_MetStep_findex             ))deallocate(MR_MetStep_findex)
+       if(associated(MR_MetStep_tindex             ))deallocate(MR_MetStep_tindex)
+       if(associated(MR_MetStep_Hour_since_baseyear))deallocate(MR_MetStep_Hour_since_baseyear)
+       if(associated(MR_MetStep_Interval           ))deallocate(MR_MetStep_Interval)
+       if(associated(MR_MetStep_year               ))deallocate(MR_MetStep_year)
+       if(associated(MR_MetStep_month              ))deallocate(MR_MetStep_month)
+       if(associated(MR_MetStep_day                ))deallocate(MR_MetStep_day)
+       if(associated(MR_MetStep_doY                ))deallocate(MR_MetStep_doY)
+       if(associated(MR_MetStep_Hour_Of_Day        ))deallocate(MR_MetStep_Hour_Of_Day)
+       if(associated(MR_iwind5_year                ))deallocate(MR_iwind5_year)
 
 #ifdef USEPOINTERS
        if(associated(MR_windfile_stephour          ))deallocate(MR_windfile_stephour)
