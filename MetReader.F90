@@ -864,9 +864,10 @@
         ! For NCEP 2.5 degree reanalysis and the NOAA product, only the directory
         ! was read into slot 1 of MR_windfiles(:).  We need to copy to slot 2
         ! to make sure we don't throw an error
-        write(MR_global_error,*) "WARNING! COMPILE ERROR NOT FIXED"
-        stop 1
-        ! MR_windfiles(2)   = MR_windfiles(1)
+
+        MR_windfiles_aux = MR_windfiles(1)
+        MR_windfiles(2) = MR_windfiles_aux
+        ! MR_windfiles(2) = MR_windfiles(1)
         if(present(iy)) then
           ! This is needed at this point for allocating the number
           ! of steps per file (this depends on the year), but this
